@@ -1,0 +1,141 @@
+### DrCal API - Exemplos de Uso
+
+# Configuração base
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@apiKey = sua_api_key_aqui
+
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. Informações da API
+GET {{baseUrl}}/
+
+### 3. Criar Agendamento
+POST {{baseUrl}}/appointments
+x-api-key: {{apiKey}}
+Content-Type: {{contentType}}
+
+{
+  "patient_name": "João Silva",
+  "patient_email": "joao.silva@email.com",
+  "appointment_date": "2024-01-15T14:30:00Z",
+  "doctor_id": "d123e4567-e89b-12d3-a456-426614174000",
+  "notes": "Consulta de rotina"
+}
+
+### 4. Buscar Slots Disponíveis
+GET {{baseUrl}}/appointments/available?date=2024-01-15
+
+### 5. Buscar Slots Disponíveis para Médico Específico
+GET {{baseUrl}}/appointments/available?date=2024-01-15&doctor_id=d123e4567-e89b-12d3-a456-426614174000
+
+### 6. Adicionar à Fila de Espera
+POST {{baseUrl}}/appointments/waitlist
+x-api-key: {{apiKey}}
+Content-Type: {{contentType}}
+
+{
+  "patient_name": "Maria Santos",
+  "patient_email": "maria.santos@email.com",
+  "preferred_date": "2024-01-20",
+  "phone": "(11) 99999-9999",
+  "notes": "Preferência por horário da manhã"
+}
+
+### 7. Listar Fila de Espera
+GET {{baseUrl}}/appointments/waitlist
+x-api-key: {{apiKey}}
+
+### 8. Estatísticas da Fila
+GET {{baseUrl}}/appointments/queue/stats
+x-api-key: {{apiKey}}
+
+### 9. Webhook do Supabase - INSERT
+POST {{baseUrl}}/webhooks/supabase
+Content-Type: {{contentType}}
+
+{
+  "type": "INSERT",
+  "table": "appointments",
+  "record": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "patient_name": "Ana Oliveira",
+    "patient_email": "ana.oliveira@email.com",
+    "appointment_date": "2024-01-16T10:00:00Z",
+    "doctor_id": "d123e4567-e89b-12d3-a456-426614174000",
+    "status": "scheduled"
+  }
+}
+
+### 10. Webhook do Supabase - UPDATE
+POST {{baseUrl}}/webhooks/supabase
+Content-Type: {{contentType}}
+
+{
+  "type": "UPDATE",
+  "table": "appointments",
+  "record": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "status": "confirmed"
+  },
+  "old_record": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "status": "scheduled"
+  }
+}
+
+### 11. Webhook do Supabase - DELETE
+POST {{baseUrl}}/webhooks/supabase
+Content-Type: {{contentType}}
+
+{
+  "type": "DELETE",
+  "table": "appointments",
+  "old_record": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "patient_name": "João Silva",
+    "patient_email": "joao.silva@email.com"
+  }
+}
+
+### 12. Documentação Swagger
+GET {{baseUrl}}/docs
+
+### 13. Obter informações do usuário atual
+GET {{baseUrl}}/users/me
+x-api-key: {{apiKey}}
+
+### 14. Regenerar API key
+POST {{baseUrl}}/users/me/api-key
+x-api-key: {{apiKey}}
+
+### 15. Atualizar status do usuário
+PUT {{baseUrl}}/users/me/status
+x-api-key: {{apiKey}}
+Content-Type: {{contentType}}
+
+{
+  "is_active": true
+}
+
+### 16. Listar todos os usuários (Admin)
+GET {{baseUrl}}/users
+x-api-key: {{apiKey}}
+
+### 17. Obter usuário específico (Admin)
+GET {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000
+x-api-key: {{apiKey}}
+
+### 18. Atualizar status de usuário específico (Admin)
+PUT {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/status
+x-api-key: {{apiKey}}
+Content-Type: {{contentType}}
+
+{
+  "is_active": false
+}
+
+### 19. Deletar usuário (Admin)
+DELETE {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000
+x-api-key: {{apiKey}} 

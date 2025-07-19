@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Serviço da API
+  api:
+    build: .
+    container_name: drcal-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - drcal-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Serviço Redis
+  redis:
+    image: redis:7-alpine
+    container_name: drcal-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    restart: unless-stopped
+    networks:
+      - drcal-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Serviço Redis Commander (opcional - interface web para Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: drcal-redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD:-}
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - drcal-network
+    profiles:
+      - monitoring
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  drcal-network:
+    driver: bridge 
