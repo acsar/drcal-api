@@ -88,73 +88,7 @@ NODE_ENV=development
 
 ### 4. Configure o Supabase
 
-Crie as seguintes tabelas no seu projeto Supabase:
-
-#### Tabela `appointments`
-```sql
-CREATE TABLE appointments (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  patient_name VARCHAR(255) NOT NULL,
-  patient_email VARCHAR(255) NOT NULL,
-  appointment_date TIMESTAMP WITH TIME ZONE NOT NULL,
-  doctor_id UUID NOT NULL,
-  status VARCHAR(50) DEFAULT 'scheduled',
-  notes TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-#### Tabela `waitlist`
-```sql
-CREATE TABLE waitlist (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  patient_name VARCHAR(255) NOT NULL,
-  patient_email VARCHAR(255) NOT NULL,
-  preferred_date DATE,
-  phone VARCHAR(20),
-  notes TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-#### View `available_slots`
-```sql
-CREATE VIEW available_slots AS
-SELECT 
-  date_trunc('day', appointment_date)::date as date,
-  date_trunc('hour', appointment_date)::time as time,
-  doctor_id,
-  COUNT(*) < 1 as available
-FROM appointments
-WHERE appointment_date >= NOW()
-GROUP BY date_trunc('day', appointment_date)::date, 
-         date_trunc('hour', appointment_date)::time, 
-         doctor_id;
-```
-
-#### Função RPC para advisory lock
-```sql
-CREATE OR REPLACE FUNCTION get_advisory_lock(lock_key TEXT)
-RETURNS JSON AS $$
-DECLARE
-  lock_id BIGINT;
-  result JSON;
-BEGIN
-  -- Converte a chave em um número para o advisory lock
-  lock_id := abs(('x' || substr(md5(lock_key), 1, 16))::bit(64)::bigint);
-  
-  -- Tenta obter o lock
-  IF pg_try_advisory_lock(lock_id) THEN
-    result := json_build_object('locked', true, 'lock_id', lock_id);
-  ELSE
-    result := json_build_object('locked', false, 'lock_id', lock_id);
-  END IF;
-  
-  RETURN result;
-END;
-$$ LANGUAGE plpgsql;
-```
+Crie as seguintes tabelas no seu projeto Supabase (veja arquivo `supabase-setup.sql`):
 
 ### 5. Execute a aplicação
 
