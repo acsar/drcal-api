@@ -11,8 +11,10 @@ const swaggerSpecs = require('./docs/swagger');
 const appointmentRoutes = require('./routes/appointments');
 const webhookRoutes = require('./routes/webhooks');
 const userRoutes = require('./routes/users');
+const professionalRoutes = require('./routes/professionals');
+const professionalServicesRoutes = require('./routes/professionalServices');
 
-// Importação do worker (inicia o processamento de filas)
+// Importação do worker (inicia o processamento de filas apenas se Redis estiver disponível)
 require('./jobs/appointmentWorker');
 
 const app = express();
@@ -58,12 +60,14 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
 app.use('/appointments', appointmentRoutes);
 app.use('/webhooks', webhookRoutes);
 app.use('/users', userRoutes);
+app.use('/professionals', professionalRoutes);
+app.use('/professionals', professionalServicesRoutes);
 
 // Rota raiz
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'DrCal API - Sistema de Agendamentos Médicos',
+    message: 'DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde',
     version: '1.0.0',
     documentation: '/docs',
     health: '/health'

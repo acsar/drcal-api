@@ -1,102 +1,179 @@
-# 🔐 Autenticação - DrCal API
+# Autenticação - DrCal API
 
 ## Visão Geral
 
-A DrCal API utiliza autenticação baseada em **API Keys** para proteger os endpoints. Cada usuário possui uma API key única que deve ser incluída em todas as requisições.
+A API do DrCal utiliza um sistema de autenticação híbrido que combina **Supabase Auth** (JWT) para autenticação de usuários e **API Keys** para acesso programático aos recursos.
 
-## Como Funciona
+## Sistema de Autenticação
 
-### 1. Criação Automática de Usuários
+### 1. Autenticação de Usuários (Supabase Auth)
+Para operações que requerem autenticação de usuário (login, registro, regeneração de API key):
 
-Quando um usuário se registra no **Supabase Auth**, automaticamente:
-- Um registro é criado na tabela `users`
-- Uma API key única é gerada
-- O usuário fica ativo por padrão
+- **Login/Logout** via Supabase Auth
+- **Registro** de novos usuários
+- **Recuperação de senha**
+- **Tokens JWT** para sessões
 
-### 2. Autenticação via API Key
+### 2. Autenticação Programática (API Keys)
+Para acesso programático aos recursos da API:
 
-Todas as requisições devem incluir o header:
-```bash
-x-api-key: sua_api_key_aqui
+- **API Keys** únicas por usuário
+- **Autenticação via header** `x-api-key`
+- **Acesso direto** aos endpoints protegidos
+
+## Fluxo de Autenticação
+
+### Passo 1: Registro de Usuário
+```http
+POST /users/register
+Content-Type: application/json
+
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}
 ```
 
-### 3. Validação
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Conta criada com sucesso. Verifique seu email para confirmar.",
+  "data": {
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "email": "usuario@exemplo.com"
+  }
+}
+```
 
-A API valida:
-- ✅ Existência da API key
-- ✅ Usuário ativo (`is_active = true`)
-- ✅ API key válida
+### Passo 2: Login
+```http
+POST /users/login
+Content-Type: application/json
 
-## 🔑 Como Obter sua API Key
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}
+```
 
-### Passo 1: Criar Conta
-1. Acesse seu projeto Supabase
-2. Vá para **Authentication > Users**
-3. Crie uma nova conta ou use o sistema de registro
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Login realizado com sucesso",
+  "data": {
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "email": "usuario@exemplo.com",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "api_key": "sua_api_key_aqui",
+    "is_active": true
+  }
+}
+```
 
-### Passo 2: Obter API Key
-Após criar a conta, use o endpoint:
-```bash
+### Passo 3: Usar a API Key
+Com a API key obtida no login, você pode acessar os recursos:
+
+```http
 GET /users/me
 x-api-key: sua_api_key_aqui
 ```
 
-**Nota:** Para o primeiro acesso, você precisará obter a API key diretamente no banco de dados ou usar o Supabase Dashboard.
+### Passo 4: Regenerar API Key (se necessário)
+Se precisar regenerar sua API key:
 
-### Passo 3: Usar a API Key
-```bash
-curl -H "x-api-key: sua_api_key_aqui" \
-     -H "Content-Type: application/json" \
-     -X POST http://localhost:3000/appointments \
-     -d '{"patient_name": "João Silva", ...}'
+```http
+POST /users/me/api-key
+Authorization: Bearer seu_jwt_token_aqui
 ```
 
-## 📋 Endpoints por Nível de Autenticação
+## Usando o Swagger UI
 
-### 🔒 Requer Autenticação
+### Configurando Autenticação no Swagger
+
+1. **Acesse a documentação Swagger**: `http://localhost:3000/docs`
+
+2. **Para endpoints que usam API Key**:
+   - Clique no botão **"Authorize"** (ícone de cadeado)
+   - No campo `x-api-key`, digite sua API key
+   - Clique em **"Authorize"**
+
+3. **Para endpoints que usam JWT Bearer**:
+   - Clique no botão **"Authorize"** (ícone de cadeado)
+   - No campo `BearerAuth`, digite seu token JWT (sem "Bearer ")
+   - Clique em **"Authorize"**
+
+### Exemplo Prático no Swagger
+
+1. **Faça login primeiro**:
+   - Use a rota `POST /users/login`
+   - Copie o `access_token` da resposta
+
+2. **Configure autenticação Bearer**:
+   - Clique em **"Authorize"**
+   - Cole o token no campo `BearerAuth`
+   - Clique em **"Authorize"**
+
+3. **Teste a regeneração de API key**:
+   - Use a rota `POST /users/me/api-key`
+   - Agora deve funcionar com o token configurado
+
+## Endpoints de Autenticação
+
+### 🔐 Autenticação de Usuário
+- `POST /users/register` - Registro de novo usuário
+- `POST /users/login` - Login do usuário
+- `POST /users/logout` - Logout do usuário
+- `POST /users/forgot-password` - Recuperação de senha
+
+### 🔑 Operações com API Key
+- `POST /users/me/api-key` - Regenerar API key (requer JWT)
+- `GET /users/me` - Informações do usuário (requer API key)
+- `PUT /users/me/status` - Atualizar status (requer API key)
+
+### 🔒 Endpoints Protegidos (API Key)
 - `POST /appointments` - Criar agendamento
 - `POST /appointments/waitlist` - Adicionar à fila de espera
 - `GET /appointments/waitlist` - Listar fila de espera
 - `GET /appointments/queue/stats` - Estatísticas da fila
-- `GET /users/me` - Informações do usuário
-- `POST /users/me/api-key` - Regenerar API key
-- `PUT /users/me/status` - Atualizar status
 - `GET /users` - Listar usuários (Admin)
 - `GET /users/{userId}` - Obter usuário (Admin)
 - `PUT /users/{userId}/status` - Atualizar usuário (Admin)
 - `DELETE /users/{userId}` - Deletar usuário (Admin)
 
-### 🔓 Autenticação Opcional
-- `GET /appointments/available` - Slots disponíveis
-
-### 🌐 Público
+### 🔓 Endpoints Públicos
 - `GET /` - Informações da API
 - `GET /health` - Health check
 - `GET /docs` - Documentação Swagger
+- `GET /appointments/available` - Slots disponíveis
 - `POST /webhooks/supabase` - Webhook do Supabase
 
-## 🛡️ Segurança
+## Recuperação de Senha
 
-### Validações Implementadas
-- ✅ API key obrigatória para endpoints protegidos
-- ✅ Verificação de usuário ativo
-- ✅ API key única por usuário
-- ✅ Regeneração segura de API keys
-- ✅ Logs de autenticação
+### Solicitar Recuperação
+```http
+POST /users/forgot-password
+Content-Type: application/json
 
-### Boas Práticas
-1. **Nunca compartilhe sua API key**
-2. **Use HTTPS em produção**
-3. **Regenere a API key regularmente**
-4. **Monitore o uso da API**
-5. **Desative usuários inativos**
+{
+  "email": "usuario@exemplo.com"
+}
+```
 
-## 🔄 Regeneração de API Key
+O Supabase enviará um email com link para redefinir a senha.
 
-Para regenerar sua API key:
-```bash
+## Regeneração de API Key
+
+### Cenário: API Key Perdida/Comprometida
+1. **Faça login** com email/senha
+2. **Use o JWT token** para regenerar a API key
+3. **Não precisa** da API key antiga
+
+```http
 POST /users/me/api-key
-x-api-key: sua_api_key_atual
+Authorization: Bearer seu_jwt_token_aqui
 ```
 
 **Resposta:**
@@ -106,29 +183,108 @@ x-api-key: sua_api_key_atual
   "message": "API key regenerada com sucesso",
   "data": {
     "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "api_key": "nova_api_key_aqui",
+    "api_key": "nova_api_key_gerada",
     "is_active": true
   }
 }
 ```
 
-## 🚨 Códigos de Erro
+## Exemplos de Uso
+
+### JavaScript/Node.js
+```javascript
+// 1. Login
+const loginResponse = await fetch('/users/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'usuario@exemplo.com',
+    password: 'senha123'
+  })
+});
+
+const { data: { access_token, api_key } } = await loginResponse.json();
+
+// 2. Usar API key para recursos
+const userResponse = await fetch('/users/me', {
+  headers: {
+    'x-api-key': api_key
+  }
+});
+
+// 3. Regenerar API key se necessário
+const regenerateResponse = await fetch('/users/me/api-key', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${access_token}`
+  }
+});
+```
+
+### cURL
+```bash
+# Login
+curl -X POST http://localhost:3000/users/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "usuario@exemplo.com", "password": "senha123"}'
+
+# Usar API key
+curl -X GET http://localhost:3000/users/me \
+  -H "x-api-key: sua_api_key_aqui"
+
+# Regenerar API key
+curl -X POST http://localhost:3000/users/me/api-key \
+  -H "Authorization: Bearer seu_jwt_token_aqui"
+```
+
+## Segurança
+
+### Validações Implementadas
+- ✅ Autenticação JWT via Supabase Auth
+- ✅ API keys únicas por usuário
+- ✅ Verificação de usuário ativo
+- ✅ Regeneração segura de API keys
+- ✅ Recuperação de senha via email
+- ✅ Logs de autenticação
+
+### Boas Práticas
+1. **Mantenha o JWT token seguro** - Use HTTPS em produção
+2. **Regenere API keys regularmente** - Por segurança
+3. **Use senhas fortes** - Para contas de usuário
+4. **Monitore o uso** - Da API e tokens
+5. **Faça logout** - Quando não estiver usando
+
+## Configuração no Supabase
+
+### Variáveis de Ambiente
+```env
+SUPABASE_URL=sua_url_do_supabase
+SUPABASE_ANON_KEY=sua_chave_anonima
+FRONTEND_URL=http://localhost:3000
+```
+
+### Tabela `users`
+A tabela `users` é criada automaticamente pelo trigger `handle_new_user()` quando um usuário se registra no Supabase Auth.
+
+## Códigos de Erro
 
 ### 401 - Não Autorizado
 ```json
 {
   "success": false,
-  "message": "API key é obrigatória",
-  "error": "MISSING_API_KEY"
+  "message": "Token de autenticação é obrigatório",
+  "error": "MISSING_TOKEN"
 }
 ```
 
-### 401 - API Key Inválida
+### 401 - Token Inválido
 ```json
 {
   "success": false,
-  "message": "API key inválida",
-  "error": "INVALID_API_KEY"
+  "message": "Token inválido ou expirado",
+  "error": "INVALID_TOKEN"
 }
 ```
 
@@ -136,66 +292,16 @@ x-api-key: sua_api_key_atual
 ```json
 {
   "success": false,
-  "message": "Usuário inativo",
+  "message": "Usuário inativo ou não encontrado",
   "error": "INACTIVE_USER"
 }
 ```
 
-## 🧪 Testando Autenticação
-
-### Swagger UI
-1. Acesse: http://localhost:3000/docs
-2. Clique no botão "Authorize"
-3. Digite sua API key no campo `x-api-key`
-4. Teste os endpoints
-
-### cURL
-```bash
-# Teste de autenticação
-curl -H "x-api-key: sua_api_key" \
-     http://localhost:3000/users/me
-
-# Criar agendamento
-curl -H "x-api-key: sua_api_key" \
-     -H "Content-Type: application/json" \
-     -X POST http://localhost:3000/appointments \
-     -d '{
-       "patient_name": "João Silva",
-       "patient_email": "joao@email.com",
-       "appointment_date": "2024-01-15T14:30:00Z",
-       "doctor_id": "d123e4567-e89b-12d3-a456-426614174000"
-     }'
-```
-
-### Postman
-1. Configure o header `x-api-key` com sua API key
-2. Teste os endpoints protegidos
-
-## 🔧 Configuração no Supabase
-
-### Tabela `users`
-```sql
-CREATE TABLE users (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  api_key TEXT UNIQUE NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-### Webhook para `auth.users`
-Configure um webhook no Supabase para a tabela `auth.users`:
-- **Eventos:** INSERT
-- **URL:** `http://seu-dominio/webhooks/supabase`
-- **Método:** POST
-
-Isso garantirá que novos usuários tenham suas API keys geradas automaticamente.
-
-## 📞 Suporte
+## Suporte
 
 Se você tiver problemas com autenticação:
-1. Verifique se a API key está correta
-2. Confirme se o usuário está ativo
-3. Teste a regeneração da API key
-4. Verifique os logs da aplicação 
+1. Verifique se o email foi confirmado no Supabase
+2. Confirme se o usuário está ativo na tabela `users`
+3. Teste o login via Supabase Dashboard
+4. Verifique os logs da aplicação
+5. Use a recuperação de senha se necessário 

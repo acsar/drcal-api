@@ -1,32 +1,70 @@
 const { Worker } = require('bullmq');
-const redis = require('../config/redis');
+const { bullMQRedis } = require('../config/redis');
 const appointmentService = require('../services/appointmentService');
 
-// Worker para processamento de agendamentos
-const appointmentWorker = new Worker('appointments', async (job) => {
-  const { type, data } = job.data;
-  
-  console.log(`Processando job ${job.id} do tipo: ${type}`);
-  
+// Verificar se o Redis está disponível
+let appointmentWorker = null;
+
+async function initializeWorker() {
   try {
-    switch (type) {
-      case 'process-appointment':
-        return await processAppointment(data);
+    // Testar conexão com Redis
+    await bullMQRedis.ping();
+    
+    // Worker para processamento de agendamentos
+    appointmentWorker = new Worker('appointments', async (job) => {
+      const { type, data } = job.data;
       
-      case 'send-notification':
-        return await sendNotification(data);
+      console.log(`Processando job ${job.id} do tipo: ${type}`);
       
-      default:
-        throw new Error(`Tipo de job desconhecido: ${type}`);
-    }
+      try {
+        switch (type) {
+          case 'process-appointment':
+            return await processAppointment(data);
+          
+          case 'send-notification':
+            return await sendNotification(data);
+          
+          default:
+            throw new Error(`Tipo de job desconhecido: ${type}`);
+        }
+      } catch (error) {
+        console.error(`Erro no processamento do job ${job.id}:`, error);
+        throw error;
+      }
+    }, {
+      connection: bullMQRedis,
+      concurrency: 5, // Processa até 5 jobs simultaneamente
+    });
+
+    // Eventos do worker
+    appointmentWorker.on('completed', (job) => {
+      console.log(`Worker completou job ${job.id} com sucesso`);
+    });
+
+    appointmentWorker.on('failed', (job, err) => {
+      console.error(`Worker falhou no job ${job.id}:`, err.message);
+    });
+
+    appointmentWorker.on('error', (err) => {
+      console.error('Erro no worker de agendamentos:', err);
+    });
+
+    console.log('✅ Worker de agendamentos inicializado com sucesso');
+    return appointmentWorker;
+    
   } catch (error) {
-    console.error(`Erro no processamento do job ${job.id}:`, error);
-    throw error;
+    if (error.message.includes('ECONNREFUSED')) {
+      console.error('🔌 Redis não está rodando:');
+      console.error('   - Verifique se o Redis está instalado e rodando');
+      console.error('   - Verifique se REDIS_HOST e REDIS_PORT estão corretos');
+      console.error('   - Em Docker: verifique se o container Redis está rodando');
+    } else {
+      console.warn('⚠️  Redis não disponível, worker não será inicializado:', error.message);
+    }
+    console.log('ℹ️  A API funcionará sem processamento de filas');
+    return null;
   }
-}, {
-  connection: redis,
-  concurrency: 5, // Processa até 5 jobs simultaneamente
-});
+}
 
 /**
  * Processa um agendamento usando advisory lock
@@ -96,17 +134,7 @@ async function sendNotification(notificationData) {
   }
 }
 
-// Eventos do worker
-appointmentWorker.on('completed', (job) => {
-  console.log(`Worker completou job ${job.id} com sucesso`);
-});
-
-appointmentWorker.on('failed', (job, err) => {
-  console.error(`Worker falhou no job ${job.id}:`, err.message);
-});
-
-appointmentWorker.on('error', (err) => {
-  console.error('Erro no worker de agendamentos:', err);
-});
+// Inicializar o worker
+initializeWorker();
 
 module.exports = appointmentWorker; 

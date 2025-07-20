@@ -1,6 +1,8 @@
-# DrCal API - Sistema de Agendamentos Médicos
+# DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde
 
-API backend completa para sistema de agendamentos para profissionais de saúde com filas assíncronas, integração Supabase e documentação Swagger.
+## 📄 Descrição
+
+API backend completa para sistema open source de agendamento para profissionais de saúde com filas assíncronas, integração Supabase e documentação Swagger.
 
 ## 🚀 Tecnologias
 
@@ -361,7 +363,7 @@ Ao adicionar novos arquivos ao projeto, inclua o seguinte cabeçalho:
 
 ```javascript
 /**
- * DrCal API - Sistema de Agendamentos Médicos
+ * DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde
  * Copyright (C) 2024 CareSys
  * 
  * This program is free software: you can redistribute it and/or modify

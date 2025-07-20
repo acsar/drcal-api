@@ -1,9 +1,9 @@
 const { Queue } = require('bullmq');
-const redis = require('../config/redis');
+const { bullMQRedis } = require('../config/redis');
 
 // Criando a fila de agendamentos
 const appointmentsQueue = new Queue('appointments', {
-  connection: redis,
+  connection: bullMQRedis,
   defaultJobOptions: {
     removeOnComplete: 10, // Remove jobs completados após 10 jobs
     removeOnFail: 5, // Remove jobs falhados após 5 jobs

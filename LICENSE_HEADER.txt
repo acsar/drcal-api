@@ -1,4 +1,4 @@
-DrCal API - Sistema de Agendamentos Médicos
+DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde
 Copyright (C) 2024 CareSys
 
 This program is free software: you can redistribute it and/or modify

@@ -1,19 +1,10 @@
 const express = require('express');
 const userController = require('../controllers/userController');
-const { authenticateApiKey } = require('../middleware/auth');
+const { authenticateApiKey, authenticateJWT } = require('../middleware/auth');
 
 const router = express.Router();
 
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     ApiKeyAuth:
- *       type: apiKey
- *       in: header
- *       name: x-api-key
- *       description: API key para autenticação
- */
+
 
 /**
  * @swagger
@@ -67,17 +58,264 @@ const router = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Login do usuário
+ *     description: Autentica o usuário com email e senha via Supabase Auth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email do usuário
+ *                 example: "usuario@exemplo.com"
+ *               password:
+ *                 type: string
+ *                 description: Senha do usuário
+ *                 example: "senha123"
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Login realizado com sucesso"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: ID do usuário
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       description: Email do usuário
+ *                     access_token:
+ *                       type: string
+ *                       description: Token de acesso JWT
+ *                     refresh_token:
+ *                       type: string
+ *                       description: Token de refresh
+ *                     api_key:
+ *                       type: string
+ *                       description: API key do usuário
+ *                     is_active:
+ *                       type: boolean
+ *                       description: Status do usuário
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post('/login', userController.login);
+
+/**
+ * @swagger
+ * /users/register:
+ *   post:
+ *     summary: Registro de novo usuário
+ *     description: Cria uma nova conta de usuário via Supabase Auth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email do usuário
+ *                 example: "usuario@exemplo.com"
+ *               password:
+ *                 type: string
+ *                 description: Senha do usuário
+ *                 example: "senha123"
+ *     responses:
+ *       201:
+ *         description: Conta criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Conta criada com sucesso. Verifique seu email para confirmar."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: ID do usuário
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       description: Email do usuário
+ *       400:
+ *         description: Dados inválidos
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post('/register', userController.register);
+
+/**
+ * @swagger
+ * /users/forgot-password:
+ *   post:
+ *     summary: Recuperação de senha
+ *     description: Envia email de recuperação de senha via Supabase Auth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email do usuário
+ *                 example: "usuario@exemplo.com"
+ *     responses:
+ *       200:
+ *         description: Email de recuperação enviado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Email de recuperação enviado com sucesso"
+ *       400:
+ *         description: Dados inválidos
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post('/forgot-password', userController.forgotPassword);
+
+/**
+ * @swagger
+ * /users/logout:
+ *   post:
+ *     summary: Logout do usuário
+ *     description: Faz logout do usuário via Supabase Auth
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Logout realizado com sucesso"
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post('/logout', authenticateJWT, userController.logout);
+
+/**
+ * @swagger
+ * /users/test-jwt:
+ *   get:
+ *     summary: Teste de autenticação JWT
+ *     description: Endpoint de teste para verificar se o BearerAuth está funcionando
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Autenticação JWT funcionando
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "JWT funcionando!"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *       401:
+ *         description: Token inválido
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.get('/test-jwt', authenticateJWT, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'JWT funcionando!',
+    user: req.user
+  });
+});
+
 router.get('/me', authenticateApiKey, userController.getCurrentUser);
 
 /**
  * @swagger
  * /users/me/api-key:
  *   post:
- *     summary: Regenera a API key do usuário atual
- *     description: Gera uma nova API key para o usuário autenticado
+ *     summary: Regenera a API key do usuário
+ *     description: Gera uma nova API key para o usuário logado via JWT
  *     tags: [Users]
  *     security:
- *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: API key regenerada com sucesso
@@ -106,11 +344,11 @@ router.get('/me', authenticateApiKey, userController.getCurrentUser);
  *                       type: boolean
  *                       description: Status do usuário
  *       401:
- *         description: Não autorizado
+ *         description: Token de autenticação inválido ou expirado
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/me/api-key', authenticateApiKey, userController.regenerateApiKey);
+router.post('/me/api-key', authenticateJWT, userController.regenerateApiKey);
 
 /**
  * @swagger

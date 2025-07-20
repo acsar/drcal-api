@@ -1,0 +1,147 @@
+### DrCal API - Testes de Serviços Profissionais
+### Este arquivo contém exemplos de requisições para testar as rotas de serviços profissionais
+
+### 1. Criar um novo serviço profissional
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Consulta",
+  "duration_minutes": 30
+}
+
+### 2. Criar outro serviço profissional
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Retorno",
+  "duration_minutes": 15
+}
+
+### 3. Criar serviço com duração maior
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Procedimento Especializado",
+  "duration_minutes": 60
+}
+
+### 4. Listar todos os serviços de um profissional
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+x-api-key: {{API_KEY}}
+
+### 5. Buscar serviço por ID
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+x-api-key: {{API_KEY}}
+
+### 6. Atualizar serviço
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Consulta Especializada",
+  "duration_minutes": 45
+}
+
+### 7. Atualizar apenas o nome do serviço
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Consulta de Rotina"
+}
+
+### 8. Atualizar apenas a duração
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "duration_minutes": 40
+}
+
+### 9. Excluir serviço (soft delete)
+DELETE http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+x-api-key: {{API_KEY}}
+
+### 10. Teste de validação - Campos obrigatórios faltando
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Teste"
+}
+
+### 11. Teste de validação - Duração inválida
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Teste",
+  "duration_minutes": 0
+}
+
+### 12. Teste de validação - Duração negativa
+POST http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Teste",
+  "duration_minutes": -10
+}
+
+### 13. Teste de validação - ID inválido
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/invalid-uuid
+x-api-key: {{API_KEY}}
+
+### 14. Teste de validação - Profissional inexistente
+GET http://localhost:3000/professionals/00000000-0000-0000-0000-000000000000/services
+x-api-key: {{API_KEY}}
+
+### 15. Teste de validação - Serviço inexistente
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/00000000-0000-0000-0000-000000000000
+x-api-key: {{API_KEY}}
+
+### 16. Teste sem autenticação
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+
+### 17. Teste com API key inválida
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services
+x-api-key: invalid-api-key
+
+### 18. Teste de atualização com duração inválida
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/{{SERVICE_ID}}
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "duration_minutes": -5
+}
+
+### 19. Teste de exclusão de serviço inexistente
+DELETE http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/00000000-0000-0000-0000-000000000000
+x-api-key: {{API_KEY}}
+
+### 20. Teste de atualização de serviço inexistente
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}/services/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "service_name": "Serviço Inexistente"
+}
+
+### Variáveis para testes:
+# API_KEY: Sua API key válida
+# PROFESSIONAL_ID: ID de um profissional criado
+# SERVICE_ID: ID de um serviço criado 

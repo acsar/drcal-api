@@ -1,4 +1,4 @@
-# 🚀 Guia de Inicialização Rápida - DrCal API
+# 🚀 Guia de Inicialização Rápida - DrCal API (Sistema Open Source de Agendamento para Profissionais de Saúde)
 
 ## ⚡ Início Rápido (5 minutos)
 

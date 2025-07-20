@@ -1,6 +1,6 @@
 const express = require('express');
 const appointmentController = require('../controllers/appointmentController');
-const { authenticateApiKey, optionalAuth } = require('../middleware/auth');
+const { authenticateApiKey } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -140,12 +140,10 @@ router.post('/', authenticateApiKey, appointmentController.createAppointment);
  *                 message:
  *                   type: string
  *                   example: "Data é obrigatória"
- *       401:
- *         description: Não autorizado
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/available', optionalAuth, appointmentController.getAvailableSlots);
+router.get('/available', appointmentController.getAvailableSlots);
 
 /**
  * @swagger

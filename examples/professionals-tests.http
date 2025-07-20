@@ -1,0 +1,96 @@
+### DrCal API - Testes de Profissionais
+### Este arquivo contém exemplos de requisições para testar as rotas de profissionais
+
+### 1. Criar um novo profissional
+POST http://localhost:3000/professionals
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "name": "Dr. João Silva",
+  "specialty": "Cardiologia",
+  "slug": "dr-joao-silva",
+  "crm": "12345-SP",
+  "rqe": "67890",
+  "img_url": "https://example.com/photo.jpg"
+}
+
+### 2. Listar todos os profissionais do usuário
+GET http://localhost:3000/professionals
+x-api-key: {{API_KEY}}
+
+### 3. Buscar profissional por ID
+GET http://localhost:3000/professionals/{{PROFESSIONAL_ID}}
+x-api-key: {{API_KEY}}
+
+### 4. Buscar profissional por slug (privado)
+GET http://localhost:3000/professionals/slug/dr-joao-silva
+x-api-key: {{API_KEY}}
+
+### 5. Buscar profissional por slug (público)
+GET http://localhost:3000/professionals/public/dr-joao-silva
+
+### 6. Atualizar profissional
+PUT http://localhost:3000/professionals/{{PROFESSIONAL_ID}}
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "name": "Dr. João Silva Santos",
+  "specialty": "Cardiologia Intervencionista",
+  "crm": "12345-SP",
+  "rqe": "67890"
+}
+
+### 7. Excluir profissional (soft delete)
+DELETE http://localhost:3000/professionals/{{PROFESSIONAL_ID}}
+x-api-key: {{API_KEY}}
+
+### 8. Teste de validação - Slug inválido
+POST http://localhost:3000/professionals
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "name": "Dr. Maria Santos",
+  "specialty": "Dermatologia",
+  "slug": "dr-maria-santos!@#",
+  "crm": "54321-SP"
+}
+
+### 9. Teste de validação - Campos obrigatórios faltando
+POST http://localhost:3000/professionals
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "specialty": "Ortopedia",
+  "crm": "98765-SP"
+}
+
+### 10. Teste de validação - ID inválido
+GET http://localhost:3000/professionals/invalid-uuid
+x-api-key: {{API_KEY}}
+
+### 11. Teste de slug duplicado
+POST http://localhost:3000/professionals
+Content-Type: application/json
+x-api-key: {{API_KEY}}
+
+{
+  "name": "Dr. Pedro Costa",
+  "specialty": "Neurologia",
+  "slug": "dr-joao-silva",
+  "crm": "11111-SP"
+}
+
+### 12. Teste sem autenticação
+GET http://localhost:3000/professionals
+
+### 13. Teste com API key inválida
+GET http://localhost:3000/professionals
+x-api-key: invalid-api-key
+
+### Variáveis para testes:
+# API_KEY: Sua API key válida
+# PROFESSIONAL_ID: ID de um profissional criado 

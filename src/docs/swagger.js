@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'DrCal API',
       version: '1.0.0',
-      description: 'API para sistema de agendamentos médicos',
+      description: 'API para sistema open source de agendamento para profissionais de saúde',
       contact: {
         name: 'DrCal Team',
         email: 'contato@drcal.com'
@@ -19,6 +19,21 @@ const options = {
       }
     ],
     components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-api-key',
+          description: 'API key para autenticação'
+        },
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Token JWT do Supabase para autenticação'
+        }
+      },
+
       schemas: {
         Appointment: {
           type: 'object',
@@ -124,9 +139,101 @@ const options = {
                description: 'Status ativo/inativo do usuário'
              }
            }
+         },
+         Professional: {
+           type: 'object',
+           properties: {
+             id: {
+               type: 'string',
+               format: 'uuid',
+               description: 'ID único do profissional'
+             },
+             name: {
+               type: 'string',
+               description: 'Nome do profissional'
+             },
+             specialty: {
+               type: 'string',
+               description: 'Especialidade médica'
+             },
+             slug: {
+               type: 'string',
+               description: 'Identificador amigável para URL'
+             },
+             crm: {
+               type: 'string',
+               description: 'Registro do Conselho Regional de Medicina'
+             },
+             rqe: {
+               type: 'string',
+               description: 'Registro de Qualificação de Especialista'
+             },
+             img_url: {
+               type: 'string',
+               format: 'uri',
+               description: 'URL da imagem do profissional'
+             },
+             user_id: {
+               type: 'string',
+               format: 'uuid',
+               description: 'ID do usuário proprietário'
+             },
+             created_at: {
+               type: 'string',
+               format: 'date-time',
+               description: 'Data de criação'
+             },
+             updated_at: {
+               type: 'string',
+               format: 'date-time',
+               description: 'Data da última atualização'
+             }
+           }
+         },
+         ProfessionalService: {
+           type: 'object',
+           properties: {
+             id: {
+               type: 'string',
+               format: 'uuid',
+               description: 'ID único do serviço'
+             },
+             professional_id: {
+               type: 'string',
+               format: 'uuid',
+               description: 'ID do profissional'
+             },
+             service_name: {
+               type: 'string',
+               description: 'Nome do serviço'
+             },
+             duration_minutes: {
+               type: 'integer',
+               description: 'Duração em minutos'
+             },
+             is_deleted: {
+               type: 'boolean',
+               description: 'Status de exclusão (soft delete)'
+             },
+             created_at: {
+               type: 'string',
+               format: 'date-time',
+               description: 'Data de criação'
+             },
+             updated_at: {
+               type: 'string',
+               format: 'date-time',
+               description: 'Data da última atualização'
+             }
+           }
          }
       }
-    }
+    },
+    security: [
+      {
+        BearerAuth: []
+      }
+    ]
   },
   apis: ['./src/routes/*.js'], // Caminho para os arquivos de rota
 };
