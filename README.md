@@ -1,3 +1,7 @@
+> **⚠️ API in development!**
+>
+> Want to be notified when it's launched? Leave your email [here](https://forms.gle/WrbATcY7C42tfG8c8).
+
 # DrCal API - Open Source Scheduling System for Healthcare Professionals
 
 ## 📄 Description
