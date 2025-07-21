@@ -1,85 +1,85 @@
-# 🚀 Guia de Inicialização Rápida - DrCal API (Sistema Open Source de Agendamento para Profissionais de Saúde)
+# 🚀 Quickstart Guide - DrCal API (Open Source Scheduling System for Healthcare Professionals)
 
-## ⚡ Início Rápido (5 minutos)
+## ⚡ Quick Start (5 minutes)
 
-### 1. Instalar Dependências
+### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Configurar Variáveis de Ambiente
+### 2. Configure Environment Variables
 ```bash
 cp env.example .env
-# Edite o arquivo .env com suas credenciais do Supabase
+# Edit the .env file with your Supabase credentials
 ```
 
-### 3. Configurar Supabase
-- Execute o arquivo `supabase-setup.sql` no seu projeto Supabase
-- Configure os webhooks conforme instruções no arquivo SQL
+### 3. Set Up Supabase
+- Run the `supabase-setup.sql` file in your Supabase project
+- Set up webhooks as instructed in the SQL file
 
-### 4. Iniciar Redis
+### 4. Start Redis
 ```bash
-# Com Docker
+# With Docker
 docker run -d -p 6379:6379 redis:7-alpine
 
-# Ou instale Redis localmente
+# Or install Redis locally
 ```
 
-### 5. Executar a API
+### 5. Run the API
 ```bash
 npm run dev
 ```
 
-### 6. Obter API Key
-- Crie uma conta no Supabase Auth
-- A API key será gerada automaticamente
-- Use o endpoint `/users/me` para obter sua API key
+### 6. Get Your API Key
+- Create an account in Supabase Auth
+- The API key will be generated automatically
+- Use the `/users/me` endpoint to get your API key
 
-### 7. Testar
-- Acesse: http://localhost:3000/docs
-- Configure sua API key no Swagger UI
-- Teste os endpoints usando a documentação Swagger
+### 7. Test
+- Access: http://localhost:3000/docs
+- Set your API key in Swagger UI
+- Test endpoints using the Swagger documentation
 
-## 🐳 Docker (Recomendado)
+## 🐳 Docker (Recommended)
 
-### Iniciar com Docker Compose
+### Start with Docker Compose
 ```bash
 docker-compose up -d
 ```
 
-### Acessar serviços:
+### Access services:
 - **API**: http://localhost:3000
-- **Documentação**: http://localhost:3000/docs
-- **Redis Commander**: http://localhost:8081 (com profile monitoring)
+- **Documentation**: http://localhost:3000/docs
+- **Redis Commander**: http://localhost:8081 (with monitoring profile)
 
-## 📋 Checklist de Configuração
+## 📋 Setup Checklist
 
-- [ ] Dependências instaladas (`npm install`)
-- [ ] Arquivo `.env` configurado
-- [ ] Supabase configurado (tabelas, views, funções)
-- [ ] Webhooks configurados no Supabase
-- [ ] Redis rodando
-- [ ] API iniciada e respondendo
-- [ ] Conta criada no Supabase Auth
-- [ ] API key obtida e configurada
-- [ ] Documentação Swagger acessível
+- [ ] Dependencies installed (`npm install`)
+- [ ] `.env` file configured
+- [ ] Supabase set up (tables, views, functions)
+- [ ] Webhooks set up in Supabase
+- [ ] Redis running
+- [ ] API started and responding
+- [ ] Account created in Supabase Auth
+- [ ] API key obtained and configured
+- [ ] Swagger documentation accessible
 
-## 🔧 Troubleshooting
+## 🛠️ Troubleshooting
 
-### Erro de conexão com Supabase
-- Verifique `SUPABASE_URL` e `SUPABASE_KEY` no `.env`
-- Confirme se as tabelas foram criadas no Supabase
+### Supabase connection error
+- Check `SUPABASE_URL` and `SUPABASE_KEY` in `.env`
+- Make sure tables were created in Supabase
 
-### Erro de conexão com Redis
-- Verifique se o Redis está rodando na porta 6379
-- Confirme as configurações no `.env`
+### Redis connection error
+- Check if Redis is running on port 6379
+- Confirm settings in `.env`
 
-### Erro de webhook
-- Verifique se os webhooks estão configurados no Supabase
-- Confirme se a URL está acessível publicamente
+### Webhook error
+- Check if webhooks are set up in Supabase
+- Confirm the URL is publicly accessible
 
-## 📞 Suporte
+## 📞 Support
 
-- 📚 Documentação completa: `README.md`
-- 🗄️ Configuração Supabase: `supabase-setup.sql`
-- 🧪 Exemplos de uso: `examples/api-tests.http` 
+- 📚 Full documentation: `README.md`
+- 📝 Supabase setup: `supabase-setup.sql`
+- 🧪 Usage examples: `examples/api-tests.http` 

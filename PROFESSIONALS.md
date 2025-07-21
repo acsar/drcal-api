@@ -1,80 +1,80 @@
-# Gestão de Profissionais de Saúde
+# Healthcare Professionals Management
 
-Este módulo implementa a gestão completa de profissionais de saúde na API DrCal (sistema open source de agendamento para profissionais de saúde), permitindo criar, listar, buscar, atualizar e excluir profissionais associados aos usuários autenticados.
+This module implements complete management of healthcare professionals in the DrCal API (open source scheduling system for healthcare professionals), allowing you to create, list, search, update, and delete professionals associated with authenticated users.
 
-## 📋 Estrutura da Tabela
+## 📋 Table Structure
 
-A tabela `public.professionals` possui os seguintes campos:
+The `public.professionals` table has the following fields:
 
-| Campo | Tipo | Obrigatório | Descrição |
-|-------|------|-------------|-----------|
-| `id` | UUID | ✅ | ID único (gerado automaticamente) |
-| `name` | TEXT | ✅ | Nome do profissional |
-| `specialty` | TEXT | ❌ | Especialidade médica |
-| `slug` | TEXT | ✅ | Identificador amigável para URL (único) |
-| `crm` | TEXT | ❌ | Registro do Conselho Regional de Medicina |
-| `rqe` | TEXT | ❌ | Registro de Qualificação de Especialista |
-| `img_url` | TEXT | ❌ | URL da imagem do profissional |
-| `user_id` | UUID | ✅ | Vínculo com o usuário logado |
-| `created_at` | TIMESTAMPTZ | ✅ | Data de criação (automático) |
-| `updated_at` | TIMESTAMPTZ | ✅ | Data de atualização (automático) |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | UUID | ✅ | Unique ID (auto-generated) |
+| `name` | TEXT | ✅ | Professional's name |
+| `specialty` | TEXT | ❌ | Medical specialty |
+| `slug` | TEXT | ✅ | Friendly URL identifier (unique) |
+| `crm` | TEXT | ❌ | Regional Medical Council registration |
+| `rqe` | TEXT | ❌ | Specialist Qualification Registration |
+| `img_url` | TEXT | ❌ | Professional's image URL |
+| `user_id` | UUID | ✅ | Linked to the logged-in user |
+| `created_at` | TIMESTAMPTZ | ✅ | Creation date (automatic) |
+| `updated_at` | TIMESTAMPTZ | ✅ | Update date (automatic) |
 
-## 🔗 Rotas Disponíveis
+## 🔗 Available Routes
 
-### Autenticadas (requer API Key)
+### Authenticated (requires API Key)
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| `POST` | `/professionals` | Criar novo profissional |
-| `GET` | `/professionals` | Listar todos os profissionais do usuário |
-| `GET` | `/professionals/:id` | Buscar profissional por ID |
-| `GET` | `/professionals/slug/:slug` | Buscar profissional por slug (privado) |
-| `PUT` | `/professionals/:id` | Atualizar profissional |
-| `DELETE` | `/professionals/:id` | Excluir profissional |
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/professionals` | Create new professional |
+| `GET` | `/professionals` | List all user's professionals |
+| `GET` | `/professionals/:id` | Get professional by ID |
+| `GET` | `/professionals/slug/:slug` | Get professional by slug (private) |
+| `PUT` | `/professionals/:id` | Update professional |
+| `DELETE` | `/professionals/:id` | Delete professional |
 
-### Públicas (sem autenticação)
+### Public (no authentication)
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| `GET` | `/professionals/public/:slug` | Buscar profissional por slug (público) |
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/professionals/public/:slug` | Get professional by slug (public) |
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-Todas as rotas autenticadas requerem o header `x-api-key` com a API key do usuário:
+All authenticated routes require the `x-api-key` header with the user's API key:
 
 ```http
-x-api-key: sua-api-key-aqui
+x-api-key: your-api-key-here
 ```
 
-## 📝 Exemplos de Uso
+## 📝 Usage Examples
 
-### Criar Profissional
+### Create Professional
 
 ```http
 POST /professionals
 Content-Type: application/json
-x-api-key: sua-api-key
+x-api-key: your-api-key
 
 {
-  "name": "Dr. João Silva",
-  "specialty": "Cardiologia",
-  "slug": "dr-joao-silva",
+  "name": "Dr. John Smith",
+  "specialty": "Cardiology",
+  "slug": "dr-john-smith",
   "crm": "12345-SP",
   "rqe": "67890",
   "img_url": "https://example.com/photo.jpg"
 }
 ```
 
-**Resposta de Sucesso (201):**
+**Success Response (201):**
 ```json
 {
   "success": true,
-  "message": "Profissional criado com sucesso",
+  "message": "Professional created successfully",
   "data": {
     "id": "123e4567-e89b-12d3-a456-426614174000",
-    "name": "Dr. João Silva",
-    "specialty": "Cardiologia",
-    "slug": "dr-joao-silva",
+    "name": "Dr. John Smith",
+    "specialty": "Cardiology",
+    "slug": "dr-john-smith",
     "crm": "12345-SP",
     "rqe": "67890",
     "img_url": "https://example.com/photo.jpg",
@@ -85,24 +85,24 @@ x-api-key: sua-api-key
 }
 ```
 
-### Listar Profissionais
+### List Professionals
 
 ```http
 GET /professionals
-x-api-key: sua-api-key
+x-api-key: your-api-key
 ```
 
-**Resposta de Sucesso (200):**
+**Success Response (200):**
 ```json
 {
   "success": true,
-  "message": "Profissionais listados com sucesso",
+  "message": "Professionals listed successfully",
   "data": [
     {
       "id": "123e4567-e89b-12d3-a456-426614174000",
-      "name": "Dr. João Silva",
-      "specialty": "Cardiologia",
-      "slug": "dr-joao-silva",
+      "name": "Dr. John Smith",
+      "specialty": "Cardiology",
+      "slug": "dr-john-smith",
       "crm": "12345-SP",
       "rqe": "67890",
       "img_url": "https://example.com/photo.jpg",
@@ -115,22 +115,22 @@ x-api-key: sua-api-key
 }
 ```
 
-### Buscar por Slug (Público)
+### Search by Slug (Public)
 
 ```http
-GET /professionals/public/dr-joao-silva
+GET /professionals/public/dr-john-smith
 ```
 
-**Resposta de Sucesso (200):**
+**Success Response (200):**
 ```json
 {
   "success": true,
-  "message": "Profissional encontrado",
+  "message": "Professional found",
   "data": {
     "id": "123e4567-e89b-12d3-a456-426614174000",
-    "name": "Dr. João Silva",
-    "specialty": "Cardiologia",
-    "slug": "dr-joao-silva",
+    "name": "Dr. John Smith",
+    "specialty": "Cardiology",
+    "slug": "dr-john-smith",
     "crm": "12345-SP",
     "rqe": "67890",
     "img_url": "https://example.com/photo.jpg",
@@ -141,103 +141,103 @@ GET /professionals/public/dr-joao-silva
 }
 ```
 
-## ⚠️ Tratamento de Erros
+## ⚠️ Error Handling
 
-### Erro de Validação (400)
+### Validation Error (400)
 ```json
 {
   "success": false,
-  "message": "Erro de validação",
+  "message": "Validation error",
   "error": {
     "code": "VALIDATION_ERROR",
-    "details": "Nome e slug são obrigatórios"
+    "details": "Name and slug are required"
   }
 }
 ```
 
-### Slug Duplicado (409)
+### Duplicate Slug (409)
 ```json
 {
   "success": false,
-  "message": "Erro de validação",
+  "message": "Validation error",
   "error": {
     "code": "DUPLICATE_SLUG",
-    "details": "Slug já existe"
+    "details": "Slug already exists"
   }
 }
 ```
 
-### Profissional Não Encontrado (404)
+### Professional Not Found (404)
 ```json
 {
   "success": false,
-  "message": "Profissional não encontrado",
+  "message": "Professional not found",
   "error": {
     "code": "NOT_FOUND",
-    "details": "Profissional não encontrado"
+    "details": "Professional not found"
   }
 }
 ```
 
-### Não Autorizado (401)
+### Unauthorized (401)
 ```json
 {
   "success": false,
-  "message": "API key é obrigatória",
+  "message": "API key is required",
   "error": "MISSING_API_KEY"
 }
 ```
 
-## 🧪 Testes
+## 🧪 Tests
 
-Use o arquivo `examples/professionals-tests.http` para testar todas as funcionalidades:
+Use the `examples/professionals-tests.http` file to test all features:
 
-1. Substitua `{{API_KEY}}` pela sua API key real
-2. Substitua `{{PROFESSIONAL_ID}}` pelo ID retornado ao criar um profissional
-3. Execute os testes na ordem para verificar todas as funcionalidades
+1. Replace `{{API_KEY}}` with your real API key
+2. Replace `{{PROFESSIONAL_ID}}` with the ID returned when creating a professional
+3. Run the tests in order to verify all features
 
-## 📚 Documentação Swagger
+## 📚 Swagger Documentation
 
-Acesse a documentação interativa em:
+Access the interactive documentation at:
 ```
 http://localhost:3000/docs
 ```
 
-## 🔧 Arquivos do Módulo
+## 🛠️ Module Files
 
 - **Service**: `src/services/professionalService.js`
 - **Controller**: `src/controllers/professionalController.js`
-- **Rotas**: `src/routes/professionals.js`
-- **Documentação**: `src/docs/swagger.js` (schema adicionado)
-- **Testes**: `examples/professionals-tests.http`
+- **Routes**: `src/routes/professionals.js`
+- **Documentation**: `src/docs/swagger.js` (schema added)
+- **Tests**: `examples/professionals-tests.http`
 
-## 🚀 Funcionalidades Implementadas
+## 🚀 Implemented Features
 
-✅ **CRUD Completo**
-- Criar profissional
-- Listar profissionais do usuário
-- Buscar por ID
-- Buscar por slug (privado e público)
-- Atualizar profissional
-- Excluir profissional
+✅ **Full CRUD**
+- Create professional
+- List user's professionals
+- Search by ID
+- Search by slug (private and public)
+- Update professional
+- Delete professional
 
-✅ **Validações**
-- Campos obrigatórios (name, slug)
-- Slug único por usuário
-- Verificação de permissões (usuário só acessa seus profissionais)
+✅ **Validations**
+- Required fields (name, slug)
+- Unique slug per user
+- Permission check (user only accesses their own professionals)
 
-✅ **Tratamento de Erros**
-- Validação de dados
-- Profissional não encontrado
-- Slug duplicado
-- Erros de autenticação
+✅ **Error Handling**
+- Data validation
+- Professional not found
+- Duplicate slug
+- Authentication errors
 
-✅ **Documentação**
-- Swagger completo
-- Exemplos de uso
-- Códigos de erro padronizados
+✅ **Documentation**
+- Complete Swagger
+- Usage examples
+- Standardized error codes
 
-✅ **Segurança**
-- Autenticação via API key
-- Isolamento por usuário
-- Validação de permissões 
+✅ **Security**
+- API key authentication
+- User isolation
+- Permission validation 

@@ -1,41 +1,41 @@
-# Configuração Docker para DrCal API
+# Docker Setup for DrCal API
 
-## 🐳 Configuração Docker
+## 🐳 Docker Configuration
 
-A API DrCal (sistema open source de agendamento para profissionais de saúde) está configurada para rodar em ambiente Docker com Redis sem autenticação, ideal para produção.
+The DrCal API (open source scheduling system for healthcare professionals) is configured to run in a Docker environment with Redis (no authentication), ideal for production.
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
 - Docker
 - Docker Compose
-- Arquivo `.env` configurado
+- Configured `.env` file
 
-## 🚀 Inicialização
+## 🚀 Getting Started
 
-### 1. Configurar Variáveis de Ambiente
+### 1. Configure Environment Variables
 
-Copie o arquivo de exemplo e configure:
+Copy the example file and configure:
 
 ```bash
 cp env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações:
+Edit the `.env` file with your settings:
 
 ```env
 # =====================================================
-# SUPABASE CONFIGURATION (OBRIGATÓRIO)
+# SUPABASE CONFIGURATION (REQUIRED)
 # =====================================================
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_KEY=sua_chave_anon_do_supabase
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
 
 # =====================================================
-# REDIS CONFIGURATION (OBRIGATÓRIO)
+# REDIS CONFIGURATION (REQUIRED)
 # =====================================================
-# Host do Redis (em Docker: use 'redis')
+# Redis host (in Docker: use 'redis')
 REDIS_HOST=redis
 
-# Porta do Redis (padrão: 6379)
+# Redis port (default: 6379)
 REDIS_PORT=6379
 
 # =====================================================
@@ -45,190 +45,190 @@ PORT=3000
 NODE_ENV=production
 ```
 
-### 2. Iniciar os Serviços
+### 2. Start Services
 
 ```bash
-# Iniciar todos os serviços
+# Start all services
 docker-compose up -d
 
-# Verificar status
+# Check status
 docker-compose ps
 
-# Ver logs
+# View logs
 docker-compose logs -f api
 ```
 
-### 3. Verificar Funcionamento
+### 3. Check Functionality
 
 ```bash
-# Health check da API
+# API health check
 curl http://localhost:3000/health
 
-# Health check do Redis
+# Redis health check
 docker-compose exec redis redis-cli ping
 
-# Verificar logs
+# View logs
 docker-compose logs api
 ```
 
-## 🔧 Serviços Disponíveis
+## 🛠️ Available Services
 
-### API (Porta 3000)
+### API (Port 3000)
 - **URL:** http://localhost:3000
-- **Documentação:** http://localhost:3000/docs
+- **Documentation:** http://localhost:3000/docs
 - **Health Check:** http://localhost:3000/health
 
-### Redis (Porta 6379)
-- **Configuração:** Sem autenticação
-- **Persistência:** AOF habilitado
+### Redis (Port 6379)
+- **Configuration:** No authentication
+- **Persistence:** AOF enabled
 - **Volume:** `redis_data`
 
-### Redis Commander (Porta 8081) - Opcional
+### Redis Commander (Port 8081) - Optional
 - **URL:** http://localhost:8081
-- **Perfil:** `monitoring`
-- **Uso:** Interface web para gerenciar Redis
+- **Profile:** `monitoring`
+- **Usage:** Web interface to manage Redis
 
-## 📝 Comandos Úteis
+## 📝 Useful Commands
 
-### Desenvolvimento
+### Development
 ```bash
-# Iniciar com logs
+# Start with logs
 docker-compose up
 
-# Rebuild da imagem
+# Rebuild image
 docker-compose build
 
-# Parar serviços
+# Stop services
 docker-compose down
 ```
 
-### Produção
+### Production
 ```bash
-# Iniciar em background
+# Start in background
 docker-compose up -d
 
-# Verificar logs
+# View logs
 docker-compose logs -f api
 
-# Reiniciar API
+# Restart API
 docker-compose restart api
 
-# Parar e remover volumes
+# Stop and remove volumes
 docker-compose down -v
 ```
 
-### Monitoramento
+### Monitoring
 ```bash
-# Iniciar com Redis Commander
+# Start with Redis Commander
 docker-compose --profile monitoring up -d
 
-# Verificar uso de recursos
+# Check resource usage
 docker stats
 
-# Acessar container da API
+# Access API container
 docker-compose exec api sh
 ```
 
 ## 🔍 Troubleshooting
 
-### API não inicia
+### API does not start
 ```bash
-# Verificar logs
+# View logs
 docker-compose logs api
 
-# Verificar se Redis está rodando
+# Check if Redis is running
 docker-compose exec redis redis-cli ping
 
-# Reiniciar serviços
+# Restart services
 docker-compose restart
 ```
 
-### Redis não conecta
+### Redis does not connect
 ```bash
-# Verificar se Redis está rodando
+# Check if Redis is running
 docker-compose ps redis
 
-# Verificar logs do Redis
+# View Redis logs
 docker-compose logs redis
 
-# Testar conexão manual
+# Test manual connection
 docker-compose exec redis redis-cli ping
 ```
 
-### Problemas de rede
+### Network issues
 ```bash
-# Verificar redes Docker
+# List Docker networks
 docker network ls
 
-# Inspecionar rede
+# Inspect network
 docker network inspect drcal_drcal-network
 ```
 
-## 🧪 Testando a API
+## 🧪 Testing the API
 
 ### 1. Health Check
 ```bash
 curl http://localhost:3000/health
 ```
 
-### 2. Documentação Swagger
+### 2. Swagger Documentation
 ```bash
-# Abrir no navegador
+# Open in browser
 open http://localhost:3000/docs
 ```
 
-### 3. Testar Profissionais
+### 3. Test Professionals
 ```bash
-# Listar profissionais (requer API key)
-curl -H "x-api-key: sua-api-key" \
+# List professionals (requires API key)
+curl -H "x-api-key: your-api-key" \
   http://localhost:3000/professionals
 ```
 
-### 4. Verificar Redis
+### 4. Check Redis
 ```bash
-# Acessar Redis CLI
+# Access Redis CLI
 docker-compose exec redis redis-cli
 
-# Verificar chaves
+# List keys
 KEYS *
 
-# Verificar filas BullMQ
+# Check BullMQ queues
 KEYS bull:*
 ```
 
-## 📊 Monitoramento
+## 📈 Monitoring
 
 ### Redis Commander
 ```bash
-# Iniciar com monitoramento
+# Start with monitoring
 docker-compose --profile monitoring up -d
 
-# Acessar interface
+# Access interface
 open http://localhost:8081
 ```
 
 ### Logs
 ```bash
-# Logs da API
+# API logs
 docker-compose logs -f api
 
-# Logs do Redis
+# Redis logs
 docker-compose logs -f redis
 
-# Todos os logs
+# All logs
 docker-compose logs -f
 ```
 
-## 🔒 Segurança
+## 🔒 Security
 
-### Em Produção
-1. **Rede:** Use rede Docker isolada
-2. **Portas:** Exponha apenas portas necessárias
-3. **Volumes:** Use volumes nomeados
-4. **Logs:** Configure rotação de logs
-5. **Backup:** Configure backup do Redis
+### In Production
+1. **Network:** Use isolated Docker network
+2. **Ports:** Expose only necessary ports
+3. **Volumes:** Use named volumes
+4. **Logs:** Set up log rotation
+5. **Backup:** Set up Redis backup
 
-### Configurações Recomendadas
+### Recommended Settings
 ```yaml
 # docker-compose.prod.yml
 version: '3.8'
@@ -252,35 +252,35 @@ services:
 
 ## 🚀 Deploy
 
-### 1. Build da Imagem
+### 1. Build the Image
 ```bash
 docker-compose build
 ```
 
-### 2. Iniciar Produção
+### 2. Start Production
 ```bash
 docker-compose -f docker-compose.yml up -d
 ```
 
-### 3. Verificar Status
+### 3. Check Status
 ```bash
 docker-compose ps
 curl http://localhost:3000/health
 ```
 
-## 📝 Notas Importantes
+## 📝 Important Notes
 
-1. **Redis sem autenticação:** Configurado para ambiente Docker isolado
-2. **Persistência:** Dados do Redis são persistidos em volume
-3. **Networking:** Serviços comunicam via rede Docker interna
-4. **Health Checks:** Configurados para monitoramento automático
-5. **Logs:** Centralizados e rotacionados
+1. **Redis without authentication:** Configured for isolated Docker environment
+2. **Persistence:** Redis data is persisted in a volume
+3. **Networking:** Services communicate via internal Docker network
+4. **Health Checks:** Configured for automatic monitoring
+5. **Logs:** Centralized and rotated
 
-## 🆘 Suporte
+## 🆘 Support
 
-Se houver problemas:
+If you have issues:
 
-1. Verificar logs: `docker-compose logs`
-2. Verificar status: `docker-compose ps`
-3. Verificar rede: `docker network ls`
-4. Reiniciar serviços: `docker-compose restart` 
+1. Check logs: `docker-compose logs`
+2. Check status: `docker-compose ps`
+3. Check network: `docker network ls`
+4. Restart services: `docker-compose restart` 

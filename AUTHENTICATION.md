@@ -1,195 +1,195 @@
-# Autenticação - DrCal API
+# Authentication - DrCal API
 
-## Visão Geral
+## Overview
 
-A API do DrCal utiliza um sistema de autenticação híbrido que combina **Supabase Auth** (JWT) para autenticação de usuários e **API Keys** para acesso programático aos recursos.
+The DrCal API uses a **hybrid authentication system** that combines **Supabase Auth** (JWT) for user authentication and **API Keys** for programmatic access to resources.
 
-## Sistema de Autenticação
+## Authentication System
 
-### 1. Autenticação de Usuários (Supabase Auth)
-Para operações que requerem autenticação de usuário (login, registro, regeneração de API key):
+### 1. User Authentication (Supabase Auth)
+For operations that require user authentication (login, registration, API key regeneration):
 
 - **Login/Logout** via Supabase Auth
-- **Registro** de novos usuários
-- **Recuperação de senha**
-- **Tokens JWT** para sessões
+- **User registration**
+- **Password recovery**
+- **JWT tokens** for sessions
 
-### 2. Autenticação Programática (API Keys)
-Para acesso programático aos recursos da API:
+### 2. Programmatic Authentication (API Keys)
+For programmatic access to API resources:
 
-- **API Keys** únicas por usuário
-- **Autenticação via header** `x-api-key`
-- **Acesso direto** aos endpoints protegidos
+- **Unique API Keys** per user
+- **Authentication via** `x-api-key` **header**
+- **Direct access** to protected endpoints
 
-## Fluxo de Autenticação
+## Authentication Flow
 
-### Passo 1: Registro de Usuário
+### Step 1: User Registration
 ```http
 POST /users/register
 Content-Type: application/json
 
 {
-  "email": "usuario@exemplo.com",
-  "password": "senha123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "Conta criada com sucesso. Verifique seu email para confirmar.",
+  "message": "Account created successfully. Check your email to confirm.",
   "data": {
     "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "email": "usuario@exemplo.com"
+    "email": "user@example.com"
   }
 }
 ```
 
-### Passo 2: Login
+### Step 2: Login
 ```http
 POST /users/login
 Content-Type: application/json
 
 {
-  "email": "usuario@exemplo.com",
-  "password": "senha123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "Login realizado com sucesso",
+  "message": "Login successful",
   "data": {
     "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "email": "usuario@exemplo.com",
+    "email": "user@example.com",
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "api_key": "sua_api_key_aqui",
+    "api_key": "your_api_key_here",
     "is_active": true
   }
 }
 ```
 
-### Passo 3: Usar a API Key
-Com a API key obtida no login, você pode acessar os recursos:
+### Step 3: Use the API Key
+With the API key obtained at login, you can access resources:
 
 ```http
 GET /users/me
-x-api-key: sua_api_key_aqui
+x-api-key: your_api_key_here
 ```
 
-### Passo 4: Regenerar API Key (se necessário)
-Se precisar regenerar sua API key:
+### Step 4: Regenerate API Key (if needed)
+If you need to regenerate your API key:
 
 ```http
 POST /users/me/api-key
-Authorization: Bearer seu_jwt_token_aqui
+Authorization: Bearer your_jwt_token_here
 ```
 
-## Usando o Swagger UI
+## Using Swagger UI
 
-### Configurando Autenticação no Swagger
+### Setting Up Authentication in Swagger
 
-1. **Acesse a documentação Swagger**: `http://localhost:3000/docs`
+1. **Access Swagger documentation**: `http://localhost:3000/docs`
 
-2. **Para endpoints que usam API Key**:
-   - Clique no botão **"Authorize"** (ícone de cadeado)
-   - No campo `x-api-key`, digite sua API key
-   - Clique em **"Authorize"**
+2. **For endpoints using API Key**:
+   - Click the **"Authorize"** button (lock icon)
+   - In the `x-api-key` field, enter your API key
+   - Click **"Authorize"**
 
-3. **Para endpoints que usam JWT Bearer**:
-   - Clique no botão **"Authorize"** (ícone de cadeado)
-   - No campo `BearerAuth`, digite seu token JWT (sem "Bearer ")
-   - Clique em **"Authorize"**
+3. **For endpoints using JWT Bearer**:
+   - Click the **"Authorize"** button (lock icon)
+   - In the `BearerAuth` field, enter your JWT token (without "Bearer ")
+   - Click **"Authorize"**
 
-### Exemplo Prático no Swagger
+### Practical Example in Swagger
 
-1. **Faça login primeiro**:
-   - Use a rota `POST /users/login`
-   - Copie o `access_token` da resposta
+1. **Login first**:
+   - Use the `POST /users/login` route
+   - Copy the `access_token` from the response
 
-2. **Configure autenticação Bearer**:
-   - Clique em **"Authorize"**
-   - Cole o token no campo `BearerAuth`
-   - Clique em **"Authorize"**
+2. **Set up Bearer authentication**:
+   - Click **"Authorize"**
+   - Paste the token in the `BearerAuth` field
+   - Click **"Authorize"**
 
-3. **Teste a regeneração de API key**:
-   - Use a rota `POST /users/me/api-key`
-   - Agora deve funcionar com o token configurado
+3. **Test API key regeneration**:
+   - Use the `POST /users/me/api-key` route
+   - It should now work with the configured token
 
-## Endpoints de Autenticação
+## Authentication Endpoints
 
-### 🔐 Autenticação de Usuário
-- `POST /users/register` - Registro de novo usuário
-- `POST /users/login` - Login do usuário
-- `POST /users/logout` - Logout do usuário
-- `POST /users/forgot-password` - Recuperação de senha
+### 🔐 User Authentication
+- `POST /users/register` - Register new user
+- `POST /users/login` - User login
+- `POST /users/logout` - User logout
+- `POST /users/forgot-password` - Password recovery
 
-### 🔑 Operações com API Key
-- `POST /users/me/api-key` - Regenerar API key (requer JWT)
-- `GET /users/me` - Informações do usuário (requer API key)
-- `PUT /users/me/status` - Atualizar status (requer API key)
+### 🔑 API Key Operations
+- `POST /users/me/api-key` - Regenerate API key (requires JWT)
+- `GET /users/me` - User info (requires API key)
+- `PUT /users/me/status` - Update status (requires API key)
 
-### 🔒 Endpoints Protegidos (API Key)
-- `POST /appointments` - Criar agendamento
-- `POST /appointments/waitlist` - Adicionar à fila de espera
-- `GET /appointments/waitlist` - Listar fila de espera
-- `GET /appointments/queue/stats` - Estatísticas da fila
-- `GET /users` - Listar usuários (Admin)
-- `GET /users/{userId}` - Obter usuário (Admin)
-- `PUT /users/{userId}/status` - Atualizar usuário (Admin)
-- `DELETE /users/{userId}` - Deletar usuário (Admin)
+### 🔒 Protected Endpoints (API Key)
+- `POST /appointments` - Create appointment
+- `POST /appointments/waitlist` - Add to waitlist
+- `GET /appointments/waitlist` - List waitlist
+- `GET /appointments/queue/stats` - Queue statistics
+- `GET /users` - List users (Admin)
+- `GET /users/{userId}` - Get user (Admin)
+- `PUT /users/{userId}/status` - Update user (Admin)
+- `DELETE /users/{userId}` - Delete user (Admin)
 
-### 🔓 Endpoints Públicos
-- `GET /` - Informações da API
+### 🔓 Public Endpoints
+- `GET /` - API info
 - `GET /health` - Health check
-- `GET /docs` - Documentação Swagger
-- `GET /appointments/available` - Slots disponíveis
-- `POST /webhooks/supabase` - Webhook do Supabase
+- `GET /docs` - Swagger documentation
+- `GET /appointments/available` - Available slots
+- `POST /webhooks/supabase` - Supabase webhook
 
-## Recuperação de Senha
+## Password Recovery
 
-### Solicitar Recuperação
+### Request Recovery
 ```http
 POST /users/forgot-password
 Content-Type: application/json
 
 {
-  "email": "usuario@exemplo.com"
+  "email": "user@example.com"
 }
 ```
 
-O Supabase enviará um email com link para redefinir a senha.
+Supabase will send an email with a link to reset your password.
 
-## Regeneração de API Key
+## API Key Regeneration
 
-### Cenário: API Key Perdida/Comprometida
-1. **Faça login** com email/senha
-2. **Use o JWT token** para regenerar a API key
-3. **Não precisa** da API key antiga
+### Scenario: Lost/Compromised API Key
+1. **Login** with email/password
+2. **Use the JWT token** to regenerate the API key
+3. **No need** for the old API key
 
 ```http
 POST /users/me/api-key
-Authorization: Bearer seu_jwt_token_aqui
+Authorization: Bearer your_jwt_token_here
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "API key regenerada com sucesso",
+  "message": "API key successfully regenerated",
   "data": {
     "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "api_key": "nova_api_key_gerada",
+    "api_key": "new_generated_api_key",
     "is_active": true
   }
 }
 ```
 
-## Exemplos de Uso
+## Usage Examples
 
 ### JavaScript/Node.js
 ```javascript
@@ -200,21 +200,21 @@ const loginResponse = await fetch('/users/login', {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    email: 'usuario@exemplo.com',
-    password: 'senha123'
+    email: 'user@example.com',
+    password: 'password123'
   })
 });
 
 const { data: { access_token, api_key } } = await loginResponse.json();
 
-// 2. Usar API key para recursos
+// 2. Use API key for resources
 const userResponse = await fetch('/users/me', {
   headers: {
     'x-api-key': api_key
   }
 });
 
-// 3. Regenerar API key se necessário
+// 3. Regenerate API key if needed
 const regenerateResponse = await fetch('/users/me/api-key', {
   method: 'POST',
   headers: {
@@ -228,80 +228,80 @@ const regenerateResponse = await fetch('/users/me/api-key', {
 # Login
 curl -X POST http://localhost:3000/users/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "usuario@exemplo.com", "password": "senha123"}'
+  -d '{"email": "user@example.com", "password": "password123"}'
 
-# Usar API key
+# Use API key
 curl -X GET http://localhost:3000/users/me \
-  -H "x-api-key: sua_api_key_aqui"
+  -H "x-api-key: your_api_key_here"
 
-# Regenerar API key
+# Regenerate API key
 curl -X POST http://localhost:3000/users/me/api-key \
-  -H "Authorization: Bearer seu_jwt_token_aqui"
+  -H "Authorization: Bearer your_jwt_token_here"
 ```
 
-## Segurança
+## Security
 
-### Validações Implementadas
-- ✅ Autenticação JWT via Supabase Auth
-- ✅ API keys únicas por usuário
-- ✅ Verificação de usuário ativo
-- ✅ Regeneração segura de API keys
-- ✅ Recuperação de senha via email
-- ✅ Logs de autenticação
+### Implemented Validations
+- ✅ JWT authentication via Supabase Auth
+- ✅ Unique API keys per user
+- ✅ Active user check
+- ✅ Secure API key regeneration
+- ✅ Password recovery via email
+- ✅ Authentication logs
 
-### Boas Práticas
-1. **Mantenha o JWT token seguro** - Use HTTPS em produção
-2. **Regenere API keys regularmente** - Por segurança
-3. **Use senhas fortes** - Para contas de usuário
-4. **Monitore o uso** - Da API e tokens
-5. **Faça logout** - Quando não estiver usando
+### Best Practices
+1. **Keep your JWT token secure** - Use HTTPS in production
+2. **Regenerate API keys regularly** - For security
+3. **Use strong passwords** - For user accounts
+4. **Monitor usage** - Of the API and tokens
+5. **Logout** - When not using
 
-## Configuração no Supabase
+## Supabase Configuration
 
-### Variáveis de Ambiente
+### Environment Variables
 ```env
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_ANON_KEY=sua_chave_anonima
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
 FRONTEND_URL=http://localhost:3000
 ```
 
-### Tabela `users`
-A tabela `users` é criada automaticamente pelo trigger `handle_new_user()` quando um usuário se registra no Supabase Auth.
+### `users` Table
+The `users` table is automatically created by the `handle_new_user()` trigger when a user registers in Supabase Auth.
 
-## Códigos de Erro
+## Error Codes
 
-### 401 - Não Autorizado
+### 401 - Unauthorized
 ```json
 {
   "success": false,
-  "message": "Token de autenticação é obrigatório",
+  "message": "Authentication token is required",
   "error": "MISSING_TOKEN"
 }
 ```
 
-### 401 - Token Inválido
+### 401 - Invalid Token
 ```json
 {
   "success": false,
-  "message": "Token inválido ou expirado",
+  "message": "Invalid or expired token",
   "error": "INVALID_TOKEN"
 }
 ```
 
-### 403 - Usuário Inativo
+### 403 - Inactive User
 ```json
 {
   "success": false,
-  "message": "Usuário inativo ou não encontrado",
+  "message": "Inactive or not found user",
   "error": "INACTIVE_USER"
 }
 ```
 
-## Suporte
+## Support
 
-Se você tiver problemas com autenticação:
-1. Verifique se o email foi confirmado no Supabase
-2. Confirme se o usuário está ativo na tabela `users`
-3. Teste o login via Supabase Dashboard
-4. Verifique os logs da aplicação
-5. Use a recuperação de senha se necessário 
+If you have authentication issues:
+1. Check if the email was confirmed in Supabase
+2. Confirm the user is active in the `users` table
+3. Test login via Supabase Dashboard
+4. Check application logs
+5. Use password recovery if needed 

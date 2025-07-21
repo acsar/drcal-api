@@ -1,80 +1,80 @@
-# DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde
+# DrCal API - Open Source Scheduling System for Healthcare Professionals
 
-## 📄 Descrição
+## 📄 Description
 
-API backend completa para sistema open source de agendamento para profissionais de saúde com filas assíncronas, integração Supabase e documentação Swagger.
+Complete backend API for an open source scheduling system for healthcare professionals with asynchronous queues, Supabase integration, and Swagger documentation.
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
-- **Node.js** - Runtime JavaScript
-- **Express.js** - Framework web
-- **Supabase** - Banco de dados e autenticação
-- **BullMQ** - Sistema de filas com Redis
-- **Swagger** - Documentação da API
-- **Docker** - Containerização
-- **Redis** - Cache e filas
+- **Node.js** - JavaScript Runtime
+- **Express.js** - Web Framework
+- **Supabase** - Database and Authentication
+- **BullMQ** - Queue system with Redis
+- **Swagger** - API Documentation
+- **Docker** - Containerization
+- **Redis** - Cache and queues
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 src/
 ├── config/
-│   ├── supabase.js      # Configuração do cliente Supabase
-│   └── redis.js         # Configuração do Redis
+│   ├── supabase.js      # Supabase client configuration
+│   └── redis.js         # Redis configuration
 ├── controllers/
-│   ├── appointmentController.js  # Controller de agendamentos
-│   └── webhookController.js      # Controller de webhooks
+│   ├── appointmentController.js  # Appointments controller
+│   └── webhookController.js      # Webhooks controller
 ├── routes/
-│   ├── appointments.js   # Rotas de agendamentos
-│   └── webhooks.js       # Rotas de webhooks
+│   ├── appointments.js   # Appointments routes
+│   └── webhooks.js       # Webhooks routes
 ├── services/
-│   └── appointmentService.js     # Lógica de negócio
+│   └── appointmentService.js     # Business logic
 ├── queues/
-│   └── appointmentsQueue.js      # Configuração das filas BullMQ
+│   └── appointmentsQueue.js      # BullMQ queue configuration
 ├── jobs/
-│   └── appointmentWorker.js      # Worker para processamento
+│   └── appointmentWorker.js      # Worker for processing
 ├── docs/
-│   └── swagger.js        # Configuração Swagger
+│   └── swagger.js        # Swagger configuration
 ├── utils/
-│   └── logger.js         # Utilitário de logging
-└── index.js              # Ponto de entrada da aplicação
+│   └── logger.js         # Logging utility
+└── index.js              # Application entry point
 ```
 
-## 🛠️ Instalação
+## 🛠️ Installation
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 18+
 - Redis
-- Conta no Supabase
+- Supabase account
 
-### 1. Clone o repositório
+### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
 cd drcal-api
 ```
 
-### 2. Instale as dependências
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure as variáveis de ambiente
+### 3. Configure environment variables
 
-Copie o arquivo de exemplo e configure suas variáveis:
+Copy the example file and set your variables:
 
 ```bash
 cp env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações:
+Edit the `.env` file with your settings:
 
 ```env
 # Supabase Configuration
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_KEY=sua_chave_anon_do_supabase
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
 
 # Redis Configuration
 REDIS_HOST=localhost
@@ -86,146 +86,146 @@ PORT=3000
 NODE_ENV=development
 ```
 
-### 4. Configure o Supabase
+### 4. Set up Supabase
 
-Crie as seguintes tabelas no seu projeto Supabase (veja arquivo `supabase-setup.sql`):
+Create the following tables in your Supabase project (see `supabase-setup.sql`):
 
-### 5. Execute a aplicação
+### 5. Run the application
 
-#### Desenvolvimento
+#### Development
 ```bash
 npm run dev
 ```
 
-#### Produção
+#### Production
 ```bash
 npm start
 ```
 
 ## 🐳 Docker
 
-### Executar com Docker Compose
+### Run with Docker Compose
 
 ```bash
-# Construir e iniciar todos os serviços
+# Build and start all services
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f api
 
-# Parar serviços
+# Stop services
 docker-compose down
 ```
 
-### Executar com monitoramento (inclui Redis Commander)
+### Run with monitoring (includes Redis Commander)
 
 ```bash
 docker-compose --profile monitoring up -d
 ```
 
-## 📚 Documentação da API
+## 📚 API Documentation
 
-A documentação Swagger está disponível em:
-- **Desenvolvimento**: http://localhost:3000/docs
-- **Produção**: http://seu-dominio/docs
+Swagger documentation is available at:
+- **Development**: http://localhost:3000/docs
+- **Production**: http://your-domain/docs
 
 ## 🔌 Endpoints
 
-### Autenticação
+### Authentication
 
-A API utiliza autenticação via API Key. Inclua o header `x-api-key` em todas as requisições:
+The API uses API Key authentication. Include the `x-api-key` header in all requests:
 
 ```bash
-x-api-key: sua_api_key_aqui
+x-api-key: your_api_key_here
 ```
 
-### Agendamentos
+### Appointments
 
-- `POST /appointments` - Criar agendamento (requer autenticação)
-- `GET /appointments/available` - Buscar slots disponíveis (autenticação opcional)
-- `POST /appointments/waitlist` - Adicionar à fila de espera (requer autenticação)
-- `GET /appointments/waitlist` - Listar fila de espera (requer autenticação)
-- `GET /appointments/queue/stats` - Estatísticas da fila (requer autenticação)
+- `POST /appointments` - Create appointment (requires authentication)
+- `GET /appointments/available` - Get available slots (authentication optional)
+- `POST /appointments/waitlist` - Add to waitlist (requires authentication)
+- `GET /appointments/waitlist` - List waitlist (requires authentication)
+- `GET /appointments/queue/stats` - Queue statistics (requires authentication)
 
-### Usuários
+### Users
 
-- `GET /users/me` - Obter informações do usuário atual
-- `POST /users/me/api-key` - Regenerar API key
-- `PUT /users/me/status` - Atualizar status do usuário
-- `GET /users` - Listar todos os usuários (Admin)
-- `GET /users/{userId}` - Obter usuário específico (Admin)
-- `PUT /users/{userId}/status` - Atualizar status de usuário (Admin)
-- `DELETE /users/{userId}` - Deletar usuário (Admin)
+- `GET /users/me` - Get current user info
+- `POST /users/me/api-key` - Regenerate API key
+- `PUT /users/me/status` - Update user status
+- `GET /users` - List all users (Admin)
+- `GET /users/{userId}` - Get specific user (Admin)
+- `PUT /users/{userId}/status` - Update user status (Admin)
+- `DELETE /users/{userId}` - Delete user (Admin)
 
 ### Webhooks
 
-- `POST /webhooks/supabase` - Webhook do Supabase
+- `POST /webhooks/supabase` - Supabase webhook
 
-### Sistema
+### System
 
-- `GET /` - Informações da API
+- `GET /` - API info
 - `GET /health` - Health check
-- `GET /docs` - Documentação Swagger
+- `GET /docs` - Swagger documentation
 
-## 🔄 Sistema de Filas
+## 🔄 Queue System
 
-O sistema utiliza BullMQ com Redis para processamento assíncrono:
+The system uses BullMQ with Redis for asynchronous processing:
 
-### Tipos de Jobs
+### Job Types
 
-1. **process-appointment** - Processa agendamentos com advisory lock
-2. **send-notification** - Envia notificações
+1. **process-appointment** - Processes appointments with advisory lock
+2. **send-notification** - Sends notifications
 
-### Monitoramento
+### Monitoring
 
-- **Redis Commander**: http://localhost:8081 (quando usando profile monitoring)
-- **Estatísticas**: `GET /appointments/queue/stats`
+- **Redis Commander**: http://localhost:8081 (when using monitoring profile)
+- **Statistics**: `GET /appointments/queue/stats`
 
-## 🔧 Configuração de Webhooks
+## 🔧 Webhook Configuration
 
-Configure webhooks no Supabase para as seguintes tabelas:
+Set up webhooks in Supabase for the following tables:
 - `appointments` (INSERT, UPDATE, DELETE)
 - `waitlist` (INSERT)
-- `auth.users` (INSERT) - Para criação automática de usuários
+- `auth.users` (INSERT) - For automatic user creation
 
-URL do webhook: `http://seu-dominio/webhooks/supabase`
+Webhook URL: `http://your-domain/webhooks/supabase`
 
-## 🔑 Como Obter sua API Key
+## 🔑 How to Get Your API Key
 
-1. **Crie uma conta no Supabase Auth** (se ainda não tiver)
-2. **A API key será gerada automaticamente** quando você se registrar
-3. **Acesse sua API key** através do endpoint `/users/me` (após primeiro login)
-4. **Use a API key** no header `x-api-key` em todas as requisições
+1. **Create an account in Supabase Auth** (if you don't have one)
+2. **The API key will be generated automatically** when you register
+3. **Access your API key** via the `/users/me` endpoint (after first login)
+4. **Use the API key** in the `x-api-key` header in all requests
 
-### Exemplo de uso:
+### Usage example:
 ```bash
-curl -H "x-api-key: sua_api_key_aqui" \
+curl -H "x-api-key: your_api_key_here" \
      -H "Content-Type: application/json" \
      -X POST http://localhost:3000/appointments \
-     -d '{"patient_name": "João Silva", ...}'
+     -d '{"patient_name": "John Smith", ...}'
 ```
 
 ## 🚀 Deploy
 
-### Variáveis de Ambiente para Produção
+### Production Environment Variables
 
 ```env
 NODE_ENV=production
-SUPABASE_URL=sua_url_producao
-SUPABASE_KEY=sua_chave_producao
-REDIS_HOST=seu_redis_host
+SUPABASE_URL=your_production_url
+SUPABASE_KEY=your_production_key
+REDIS_HOST=your_redis_host
 REDIS_PORT=6379
-REDIS_PASSWORD=sua_senha_redis
+REDIS_PASSWORD=your_redis_password
 PORT=3000
 ```
 
 ### Docker Production
 
 ```bash
-# Construir imagem de produção
+# Build production image
 docker build -t drcal-api .
 
-# Executar container
+# Run container
 docker run -d \
   --name drcal-api \
   -p 3000:3000 \
@@ -235,69 +235,69 @@ docker run -d \
 
 ## 📝 Logs
 
-A aplicação utiliza logging estruturado:
-- **Desenvolvimento**: Logs coloridos no console
-- **Produção**: Logs em formato JSON
+The application uses structured logging:
+- **Development**: Colored logs in the console
+- **Production**: JSON formatted logs
 
-## 🔒 Segurança
+## 🔒 Security
 
-- Helmet.js para headers de segurança
-- CORS configurado
-- Validação de entrada
-- Usuário não-root no Docker
-- Advisory locks para processamento seguro
+- Helmet.js for security headers
+- CORS configured
+- Input validation
+- Non-root user in Docker
+- Advisory locks for safe processing
 
-## 🤝 Contribuição
+## 🤝 Contribution
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está licenciado sob a **AGPLv3**.
+This project is licensed under **AGPLv3**.
 
-Isso significa que você pode usar, modificar e redistribuir o sistema livremente, desde que mantenha esta licença e publique as modificações se rodar como serviço.
+This means you can use, modify, and redistribute the system freely, as long as you keep this license and publish modifications if running as a service.
 
-### ❗ Licença Comercial
+### ❗ Commercial License
 
-Se deseja usar este sistema **sem abrir o código-fonte das modificações**, oferecemos uma **licença comercial**.
+If you want to use this system **without disclosing the source code of your modifications**, we offer a **commercial license**.
 
-**Entre em contato:** comercial@caresys.com.br
+**Contact us:** comercial@caresys.com.br
 
-### 📋 O que a AGPLv3 permite:
+### 📋 What AGPLv3 allows:
 
-✅ **Usar** o software livremente  
-✅ **Modificar** o código-fonte  
-✅ **Redistribuir** o software  
-✅ **Usar comercialmente**  
+✅ **Use** the software freely  
+✅ **Modify** the source code  
+✅ **Redistribute** the software  
+✅ **Use commercially**  
 
-### ⚠️ O que a AGPLv3 exige:
+### ⚠️ What AGPLv3 requires:
 
-🔒 **Manter a licença** AGPLv3  
-🔒 **Disponibilizar o código-fonte** das modificações  
-🔒 **Licenciar modificações** sob AGPLv3  
-🔒 **Informar usuários** sobre seus direitos  
+🔒 **Keep the AGPLv3 license**  
+🔒 **Make the source code** of modifications available  
+🔒 **License modifications** under AGPLv3  
+🔒 **Inform users** about their rights  
 
-### 🏢 Para Empresas:
+### 🏢 For Companies:
 
-Se você é uma empresa e precisa:
-- Manter modificações privadas
-- Usar sem abrir o código-fonte
-- Suporte comercial
-- Licença permissiva
+If you are a company and need to:
+- Keep modifications private
+- Use without disclosing source code
+- Commercial support
+- Permissive license
 
-**Considere nossa licença comercial** - entre em contato: comercial@caresys.com.br
+**Consider our commercial license** - contact: comercial@caresys.com.br
 
-## 📝 Aplicando a Licença em Novos Arquivos
+## 📝 Applying the License to New Files
 
-Ao adicionar novos arquivos ao projeto, inclua o seguinte cabeçalho:
+When adding new files to the project, include the following header:
 
 ```javascript
 /**
- * DrCal API - Sistema Open Source de Agendamento para Profissionais de Saúde
+ * DrCal API - Open Source Scheduling System for Healthcare Professionals
  * Copyright (C) 2024 CareSys
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -317,8 +317,8 @@ Ao adicionar novos arquivos ao projeto, inclua o seguinte cabeçalho:
  */
 ```
 
-Veja o arquivo `LICENSE_HEADER.txt` para o texto completo.
+See the `LICENSE_HEADER.txt` file for the full text.
 
-## 🆘 Suporte
+## 🆘 Support
 
-Para suporte, envie um email para contato@drcal.com ou abra uma issue no repositório. 
+For support, email contato@drcal.com or open an issue in the repository. 
